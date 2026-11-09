@@ -1010,7 +1010,29 @@
     </div>
     <input type="file" id="imp" accept=".json" hidden>
     <script>
-        const K = 'th-kit-v4', mig = s => { const n = init().forms, L = { kit21: 21, kit22: 22 }; if (s && Array.isArray(s.forms) && L[s.id] == s.forms.length) { s.forms.push(...n.slice(s.forms.length)); s.id = 'kit32' } if (s && Array.isArray(s.forms) && s.forms[2] && s.forms[2].secs && s.forms[2].secs[3] && s.forms[2].secs[3].k == 'f') { s.forms[2].secs[3] = n[2].secs[3] } if (s && Array.isArray(s.forms) && s.forms[3] && s.forms[3].secs && s.forms[3].secs[1] && s.forms[3].secs[1].k == 't') { s.forms[3].secs[1] = n[3].secs[1] } return s }, OK = s => s && Array.isArray(s.forms) && s.id == 'kit32' && s.forms.length == 32, TY = { tx: 'Texto', dt: 'Fecha', nu: 'Número', dl: 'Fecha y hora', em: 'Correo', ta: 'Párrafo', se: 'Lista', ra: 'Opción única', mu: 'Varias opciones', ck: 'Casilla' };
+        const K = 'th-kit-v4', mig = s => {
+            const n = init().forms, L = { kit21: 21, kit22: 22, kit32: 32 };
+            if (!s || !Array.isArray(s.forms)) return s;
+            if (L[s.id] == s.forms.length) {
+                s.forms.push(...n.filter(form => !s.forms.some(old => old.code == form.code)));
+                s.id = 'kit33';
+            }
+            if (s.id == 'kit33') {
+                const th23 = n.find(form => form.code == 'TH-FR-23');
+                let i = s.forms.findIndex(form => form.code == 'TH-FR-23');
+                if (i < 0 && th23) {
+                    i = s.forms.push(JSON.parse(JSON.stringify(th23))) - 1;
+                }
+                const th22Index = s.forms.findIndex(form => form.code == 'TH-FR-22');
+                if (i >= 0 && th22Index >= 0 && i != th22Index + 1) {
+                    const [form] = s.forms.splice(i, 1);
+                    s.forms.splice(s.forms.findIndex(item => item.code == 'TH-FR-22') + 1, 0, form);
+                }
+            }
+            if (s.forms[2] && s.forms[2].secs && s.forms[2].secs[3] && s.forms[2].secs[3].k == 'f') s.forms[2].secs[3] = n[2].secs[3];
+            if (s.forms[3] && s.forms[3].secs && s.forms[3].secs[1] && s.forms[3].secs[1].k == 't') s.forms[3].secs[1] = n[3].secs[1];
+            return s
+        }, OK = s => s && Array.isArray(s.forms) && s.id == 'kit33' && s.forms.some(form => form.code == 'TH-FR-23'), TY = { tx: 'Texto', dt: 'Fecha', nu: 'Número', dl: 'Fecha y hora', em: 'Correo', ta: 'Párrafo', se: 'Lista', ra: 'Opción única', mu: 'Varias opciones', ck: 'Casilla' };
         const CASES = [{ n: 'Caso A · Auxiliar Logístico (operativo)', p: { cargo: 'Auxiliar Logístico', area: 'Operaciones', contrato: 'Fijo', educ: 'Bachiller', exp: '6 meses en bodega o logística' } }, { n: 'Caso B · Analista Contable (táctico)', p: { cargo: 'Analista Contable', area: 'Finanzas', contrato: 'Indefinido', educ: 'Profesional en Contaduría', exp: '2 años en cargos contables' } }, { n: 'Caso C · Coordinador de Área (estratégico)', p: { cargo: 'Coordinador de Área', area: 'Gestión Humana', contrato: 'Indefinido', educ: 'Especialista', exp: '5 años, 2 liderando equipos' } }];
         const f = (l, t = 'tx', x = {}) => ({ l, t, ...x }), F = (t, a) => ({ k: 'f', t, f: a }), TB = (t, c, r, x = {}) => ({ k: 't', t, c, r, ...x }),
             tx = (k, l, x = {}) => ({ k, l, t: 'tx', ...x }), X = (k, l, w) => ({ k, l, t: 'x', w }), P = { k: 'p', l: 'Puntaje (1-5)', t: 'nu', mx: 5, w: '16%' },
@@ -1019,8 +1041,8 @@
             L5 = ['1', '2', '3', '4', '5'], A_ = 'Atracción & Selección', B_ = 'Contratación & Onboarding', C_ = 'Desempeño & Desarrollo', D_ = 'Estrategia & Bienestar',
             ES = ['Filtro HV', 'Entrevista HR', 'Prueba Técnica', 'Exámenes Médicos'];
         const D = (t, ...p) => ({ k: 'd', t, p }), MD = (s, n, t, sub, secs) => ({ ...FM('Modelos de Documentos', s, n, t, sub, secs), code: 'TH-MD-' + n });
-        const init = () => ({
-            id: 'kit32', empresa: 'EMPRESA S.A.S.', ver: '02', fecha: 'Oct 2026', shared: {}, forms: [
+        const init = () => { const data = ({
+            id: 'kit33', empresa: 'EMPRESA S.A.S.', ver: '02', fecha: 'Oct 2026', shared: {}, forms: [
                 FM(A_, 'Requisición de Personal', '01', 'Requisición de Personal', 'Proceso de Selección y Contratación', [
                     F('1. Datos generales de la solicitud', [f('Fecha de solicitud', 'dt'), f('Área / Departamento solicitante', 'tx', { b: 'area' }), f('Cargo solicitado', 'tx', { b: 'cargo' }), f('No. de vacantes', 'nu', { v: 1 }), f('Jefe inmediato', 'tx', { b: 'jefe' })]),
                     F('2. Motivo de la requisición', [f('Causa principal', 'se', { o: ['Nueva Creación', 'Reemplazo / Retiro', 'Licencia / Incapacidad', 'Incremento Temporal'] }), f('Persona a reemplazar (si aplica)', 'tx', { ph: 'N/A si es nueva creación' })]),
@@ -1142,6 +1164,17 @@
                     TB('2. Agenda del programa', [tx('a', 'Día / hora', { w: '15%' }), tx('b', 'Tema'), tx('c', 'Responsable', { w: '18%' }), tx('d', 'Duración', { w: '11%' })], [{ a: 'Día 1 · 8:00', b: 'Bienvenida, misión, visión, valores y recorrido por la sede', c: 'Talento Humano', d: '2 h' }, { a: 'Día 1 · 10:30', b: 'Reglamento Interno de Trabajo, beneficios y entrega de carné', c: 'Talento Humano', d: '1,5 h' }, { a: 'Día 2 · 8:00', b: 'Inducción SG-SST: riesgos del puesto, emergencias y EPP', c: 'Coordinador SST', d: '3 h' }, { a: 'Día 3 · 8:00', b: 'Presentación del equipo, procesos y herramientas del área', c: 'Jefe inmediato', d: '4 h' }, { a: 'Día 5 · 15:00', b: 'Cierre: resolución de dudas y encuesta de satisfacción', c: 'Talento Humano', d: '1 h' }]),
                     D('3. Seguimiento', `Registre la asistencia en el formato TH-FR-11 y aplique la encuesta TH-FR-13 al finalizar la semana.`)])]
         });
+            const th22 = data.forms.find(form => form.code == 'TH-FR-22');
+            const activities = th22.secs.find(section => section.k == 't').r;
+            data.forms.push(FM(D_, 'Lista de chequeo', '23', 'Lista de Chequeo de Actividades de Talento Humano', 'Verificación de cumplimiento de actividades por proceso', [
+                TB('Lista de chequeo de actividades', [X('a', 'Proceso', '15%'), X('b', 'Actividad', '43%'), { k: 'c', l: 'Cumple', t: 'se', o: ['Sí', 'No', 'Parcialmente'], w: '17%' }, tx('d', 'Observaciones', { w: '25%' })],
+                    activities.map(row => ({ a: row.a, b: row.b }))),
+                F('Datos de la revisión', [f('Nombre de quien revisó'), f('Fecha de la revisión', 'dt')])
+            ], sg('Firma de quien revisó|Firma')));
+            const th23Form = data.forms.pop();
+            data.forms.splice(data.forms.findIndex(form => form.code == 'TH-FR-22') + 1, 0, th23Form);
+            return data
+        };
         let S = (() => { try { const s = JSON.parse(localStorage.getItem(K)); if (OK(mig(s))) return s } catch (e) { } return init() })(), cur = 0, Q = '', edit = false, R = [], A = [], CL = [];
         const $ = i => document.getElementById(i), save = () => { try { localStorage.setItem(K, JSON.stringify(S)) } catch (e) { } };
         const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
